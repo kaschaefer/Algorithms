@@ -13,6 +13,7 @@
 #include <list>
 #include <set>
 #include <limits>
+#include <queue>
 
 //Graph Class
 //Vertices are represented by ints
@@ -36,6 +37,7 @@ public:
     void AddEdge(int u, int v, T w) noexcept;
     //Find Shortest Path from Vertex S
     void ShortestPath(int s);
+    void ShortestPathPQ(int s);
     
 };
 
@@ -61,6 +63,52 @@ void Graph<T>::AddEdge(int u, int v, T w) noexcept {
     adjacent->adj[u].push_back(std::make_pair(w, v));
     adjacent->adj[v].push_back(std::make_pair(w, u));
     numEdges += 2;
+}
+
+template<typename T>
+void Graph<T>::ShortestPathPQ(int s){
+    const auto INF = std::numeric_limits<T>::max();
+    using myPair = std::pair<T, int>;
+    //Make A set to hold processed vertices
+    //Every item of the set is a pair
+    std::priority_queue< myPair, std::vector<myPair>, std::greater<myPair> > pq;
+    //Vector to store final weights
+    std::vector<T> weights(numVertices, INF);
+    //Process the source vertex
+    pq.push(std::make_pair(0, s));
+    //make its distance 0
+    weights[s] = 0;
+    
+    //while set isn't empty
+    while(!pq.empty()){
+        //Get min dist vertex u
+        auto u = pq.top().second;
+        pq.pop();
+        
+        //get iterator to u's adjacency list
+        typename std::list<std::pair<T, int> >::iterator it = adjacent->adj[u].begin();
+        typename std::list<std::pair<T, int> >::iterator ite = adjacent->adj[u].end();
+        
+        // For each vertex v in u's adjacency list
+        for (; it != ite; ++it){
+            //Get Vertex Index and Weight (note weight is not int)
+            auto v = (*it).second;
+            auto v_w = (*it).first;
+            
+            //If there is a path to v through u
+            if (weights[v] > weights[u] + v_w){
+                weights[v] = weights[u] + v_w;
+                pq.push(std::make_pair(weights[v], v));
+            }
+        }
+        
+        
+    }
+    // Print shortest distances stored in dist[]
+    printf("Vertex   Distance from Source\n");
+    for (int i = 0; i < numVertices; ++i){
+        std::cout << i << "   " << weights[i] << std::endl;
+    }
 }
 
 //Find Shortest Path from S

@@ -1,6 +1,7 @@
 //
 //  main.cpp
 //  dijkstra
+//Goal: Compare times of Dijkstra's using Set vs. PQ
 //
 //  Created by Mikaela Schaefer on 3/28/18.
 //  Copyright © 2018 Mikaela Schaefer. All rights reserved.
@@ -9,6 +10,7 @@
 #include <iostream>
 #include <limits>
 #include "graph.cpp"
+#include <ctime>
 
 #define V 9
 
@@ -16,8 +18,6 @@ int main()
 {
     /* Let us create the example graph discussed above */
     Graph<int> theIntGraph(V);
-    Graph<double> theDoubGraph(V);
-    Graph<float> theFloatGraph(V);
     
     theIntGraph.AddEdge(0, 1, 4);
     theIntGraph.AddEdge(0, 7, 8);
@@ -33,40 +33,27 @@ int main()
     theIntGraph.AddEdge(6, 7, 1);
     theIntGraph.AddEdge(6, 8, 6);
     theIntGraph.AddEdge(7, 8, 7);
-    
-    theDoubGraph.AddEdge(0, 1, 4);
-    theDoubGraph.AddEdge(0, 7, 8);
-    theDoubGraph.AddEdge(1, 2, 8);
-    theDoubGraph.AddEdge(1, 7, 11);
-    theDoubGraph.AddEdge(2, 3, 7);
-    theDoubGraph.AddEdge(2, 8, 2);
-    theDoubGraph.AddEdge(2, 5, 4);
-    theDoubGraph.AddEdge(3, 4, 9);
-    theDoubGraph.AddEdge(3, 5, 14);
-    theDoubGraph.AddEdge(4, 5, 10);
-    theDoubGraph.AddEdge(5, 6, 2);
-    theDoubGraph.AddEdge(6, 7, 1);
-    theDoubGraph.AddEdge(6, 8, 6);
-    theDoubGraph.AddEdge(7, 8, 7);
-    
-    theFloatGraph.AddEdge(0, 1, 4);
-    theFloatGraph.AddEdge(0, 7, 8);
-    theFloatGraph.AddEdge(1, 2, 8);
-    theFloatGraph.AddEdge(1, 7, 11);
-    theFloatGraph.AddEdge(2, 3, 7);
-    theFloatGraph.AddEdge(2, 8, 2);
-    theFloatGraph.AddEdge(2, 5, 4);
-    theFloatGraph.AddEdge(3, 4, 9);
-    theFloatGraph.AddEdge(3, 5, 14);
-    theFloatGraph.AddEdge(4, 5, 10);
-    theFloatGraph.AddEdge(5, 6, 2);
-    theFloatGraph.AddEdge(6, 7, 1);
-    theFloatGraph.AddEdge(6, 8, 6);
-    theFloatGraph.AddEdge(7, 8, 7);
-    
+    clock_t begin = clock();
     theIntGraph.ShortestPath(0);
-    theDoubGraph.ShortestPath(0);
-    theFloatGraph.ShortestPath(0);
+    clock_t set = clock();
+    theIntGraph.ShortestPathPQ(0);
+    clock_t end = clock();
+    std::cout << "Time using Set: " << (set - begin) / (double)(CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
+    std::cout << "Time using PQ: " << (end - set) / (double)(CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
+    
+    begin = clock();
+    //For all paths
+    for (int i =0; i < V; ++i){
+        theIntGraph.ShortestPath(i);
+    }
+    set = clock();
+    for (int i =0; i < V; ++i){
+        theIntGraph.ShortestPathPQ(i);
+    }
+    end = clock();
+    
+    std::cout << "Time using Set: " << (set - begin) / (double)(CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
+    std::cout << "Time using PQ: " << (end - set) / (double)(CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
     
     return 0;
 }
